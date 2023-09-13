@@ -20,7 +20,7 @@ public class UserService implements CommonService<UUID, UserResponseDto, UserUpd
     public UserResponseDto findById(UUID uuid) {
         User user = users.get(uuid);
         if(user == null) return null;
-
+//     TODO ADD AUTO DTO METHODS
         return null;
     }
 
