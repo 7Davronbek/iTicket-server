@@ -1,10 +1,13 @@
 package com.example.iticket.user.dto;
 
 import com.example.iticket.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserDtoMapper {
     private final ModelMapper mapper = new ModelMapper();
 
