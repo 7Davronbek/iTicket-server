@@ -1,16 +1,13 @@
 package com.example.iticket.user.service;
 
-import com.example.iticket.custom.CustomHooks;
 import com.example.iticket.user.dto.UserCreateDto;
 import com.example.iticket.user.dto.UserDtoMapper;
 import com.example.iticket.user.dto.UserResponseDto;
 import com.example.iticket.user.dto.UserUpdateDto;
 import com.example.iticket.user.entity.User;
-import com.example.iticket.user.entity.UserType;
 import com.example.iticket.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,7 +19,6 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
-//    private final CustomHooks customHooks;
 
 
     public UserResponseDto getUser(UUID uuid) {
