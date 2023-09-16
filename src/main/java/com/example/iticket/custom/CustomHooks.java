@@ -6,6 +6,7 @@ import com.example.iticket.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 @Component
@@ -18,6 +19,6 @@ public class CustomHooks {
             User user = optionalUser.get();
             boolean isAdmin = user.getUserType().equals(UserType.ADMIN);
             if(!isAdmin) throw new IllegalArgumentException("Not allowed");
-        }
+        } else throw new NoSuchElementException("User not found");
     }
 }
