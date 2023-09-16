@@ -60,7 +60,6 @@ public class UserService {
 
         User user = userDtoMapper.toEntity(userCreateDto);
         user.setId(UUID.randomUUID());
-        user.setUserType(UserType.USER);
 
         userRepository.save(user);
     }
