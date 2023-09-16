@@ -33,13 +33,16 @@ public class HallController {
         return hallService.getHall(id);
     }
 
-    @PutMapping("/{id}")
-    public void updateUser(@PathVariable("id") UUID id, @RequestBody HallUpdateDto hallUpdateDto) {
-        hallService.update(id, hallUpdateDto);
+    @PutMapping("/{id}/ownerId/{ownerId}")
+    public void updateUser(@PathVariable("id") UUID id,
+                           @RequestBody HallUpdateDto hallUpdateDto,
+                           @PathVariable("ownerId") UUID ownerId) {
+        hallService.update(id, hallUpdateDto, ownerId);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable("id") UUID id) {
-        hallService.delete(id);
+    @DeleteMapping("/{id}/ownerId/{ownerId}")
+    public void deleteUser(@PathVariable("id") UUID id,
+                           @PathVariable("ownerId") UUID ownerid) {
+        hallService.delete(id, ownerid);
     }
 }

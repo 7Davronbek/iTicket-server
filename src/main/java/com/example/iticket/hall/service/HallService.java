@@ -24,7 +24,6 @@ import java.util.UUID;
 public class HallService {
     private final HallDtoMapper hallDtoMapper;
     private final HallRepository hallRepository;
-    private final UserRepository userRepository;
     private final CustomHooks customHooks;
 
     public HallResponseDto getHall(UUID uuid) {
@@ -37,7 +36,9 @@ public class HallService {
         return hallDtoMapper.toResponse(hallRepository.findAll());
     }
 
-    public void update(UUID uuid, HallUpdateDto hallUpdateDto) {
+    public void update(UUID uuid, HallUpdateDto hallUpdateDto, UUID ownerId) {
+        customHooks.isAdmin(ownerId);
+
         Optional<Hall> optionalHall = hallRepository.findById(uuid);
         if (optionalHall.isPresent()) {
             Hall hall = optionalHall.get();
@@ -50,7 +51,9 @@ public class HallService {
         throw new NoSuchElementException("Hall not found");
     }
 
-    public void delete(UUID uuid) {
+    public void delete(UUID uuid, UUID ownerId) {
+        customHooks.isAdmin(ownerId);
+
         hallRepository.deleteById(uuid);
     }
 
