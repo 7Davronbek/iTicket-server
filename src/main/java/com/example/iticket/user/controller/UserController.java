@@ -23,6 +23,7 @@ public class UserController {
         userService.create(userCreateDTO);
     }
 
+//    @GetMapping("/ownerId/{ownerId}")
     @GetMapping
     public List<UserResponseDto> getUsers() {
         return userService.getUsers();
