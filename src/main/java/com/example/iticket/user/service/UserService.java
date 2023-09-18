@@ -23,7 +23,7 @@ public class UserService {
     public UserResponseDto getUser(UUID uuid) {
         Optional<User> optionalUser = userRepository.findById(uuid);
 
-        return optionalUser.map(userDtoMapper::toResponse).orElse(null);
+        return optionalUser.map(userDtoMapper::toResponse).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public List<UserResponseDto> getUsers() {
