@@ -18,10 +18,10 @@ import java.util.UUID;
 public class BlockController {
     private final BlockService blockService;
 
-    @PostMapping("/ownerId/{ownerId}/hallId/{hallId}")
+    @PostMapping
     public void createBlock(@Valid @RequestBody BlockCreateDto blockCreateDto,
-                            @PathVariable("ownerId") UUID ownerId,
-                            @PathVariable("hallId") UUID hallId) {
+                            @RequestHeader(name = "ownerId") UUID ownerId,
+                            @RequestHeader(name = "hallId") UUID hallId) {
         blockService.create(blockCreateDto, ownerId, hallId);
     }
 
@@ -35,16 +35,16 @@ public class BlockController {
         return blockService.getBlock(id);
     }
 
-    @PutMapping("/{id}/ownerId/{ownerId}")
+    @PutMapping("/{id}")
     public void updateBlock(@PathVariable("id") UUID id,
-                           @RequestBody BlockUpdateDto blockUpdateDto,
-                           @PathVariable("ownerId") UUID ownerId) {
+                            @RequestBody BlockUpdateDto blockUpdateDto,
+                            @RequestHeader(name = "ownerId") UUID ownerId) {
         blockService.update(id, blockUpdateDto, ownerId);
     }
 
-    @DeleteMapping("/{id}/ownerId/{ownerId}")
+    @DeleteMapping("/{id}")
     public void deleteBlock(@PathVariable("id") UUID id,
-                           @PathVariable("ownerId") UUID ownerid) {
+                            @RequestHeader(name = "ownerId") UUID ownerid) {
         blockService.delete(id, ownerid);
     }
 }

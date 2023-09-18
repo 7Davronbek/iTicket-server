@@ -45,6 +45,17 @@ public class TicketService {
         if (optionalTicket.isPresent()) {
             Ticket ticket = optionalTicket.get();
 
+            if (!ticket.getName().equals(ticketUpdateDto.getName())) {
+                Optional<Boolean> ticketContains = ticketRepository
+                        .findAll()
+                        .stream()
+                        .map(singleTicket -> singleTicket.getName().equals(ticketUpdateDto.getName()))
+                        .findFirst();
+
+                if (ticketContains.isPresent() && ticketContains.get())
+                    throw new NoSuchElementException("Ticket is already exist");
+            }
+
             ticketDtoMapper.toEntity(ticketUpdateDto, ticket);
 
             ticketRepository.save(ticket);
@@ -60,11 +71,10 @@ public class TicketService {
     public void create(TicketCreateDto ticketCreateDto, UUID ownerId, UUID eventId, UUID blockId) {
         customHooks.isAdmin(ownerId);
 
-
         Optional<Boolean> ticketContains = ticketRepository
                 .findAll()
                 .stream()
-                .map(event -> event.getName().equals(ticketCreateDto.getName()))
+                .map(ticket -> ticket.getName().equals(ticketCreateDto.getName()))
                 .findFirst();
 
         if (ticketContains.isPresent() && ticketContains.get())

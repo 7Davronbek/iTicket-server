@@ -45,12 +45,20 @@ public class EventService {
         if (optionalEvent.isPresent()) {
             Event event = optionalEvent.get();
 
+            if (!event.getName().equals(eventUpdateDto.getName())) {
+                Optional<Boolean> eventContains = eventRepository
+                        .findAll()
+                        .stream()
+                        .map(singleEvent -> singleEvent.getName().equals(eventUpdateDto.getName()))
+                        .findFirst();
+
+                if (eventContains.isPresent()) throw new NoSuchElementException("Event is already exist");
+            }
+
             eventDtoMapper.toEntity(eventUpdateDto, event);
 
             eventRepository.save(event);
-            return;
-        }
-        throw new NoSuchElementException("Event not found");
+        } else throw new NoSuchElementException("Event not found");
     }
 
     public void delete(UUID uuid, UUID ownerId) {
@@ -61,7 +69,6 @@ public class EventService {
 
     public void create(EventCreateDto eventCreateDto, UUID ownerId, UUID hallId) {
         customHooks.isAdmin(ownerId);
-
 
         Optional<Boolean> eventContains = eventRepository
                 .findAll()
@@ -76,7 +83,7 @@ public class EventService {
         Optional<User> optionalUser = userRepository.findById(ownerId);
         Optional<Hall> optionalHall = hallRepository.findById(hallId);
 
-        if(optionalHall.isPresent() && optionalUser.isPresent()) {
+        if (optionalHall.isPresent() && optionalUser.isPresent()) {
 
             User user = optionalUser.get();
             Hall hall = optionalHall.get();

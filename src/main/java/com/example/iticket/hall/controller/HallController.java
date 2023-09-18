@@ -17,9 +17,9 @@ import java.util.UUID;
 public class HallController {
     private final HallService hallService;
 
-    @PostMapping("/ownerId/{ownerId}")
+    @PostMapping
     public void createHall(@Valid @RequestBody HallCreateDto hallCreateDto,
-                           @PathVariable("ownerId") UUID ownerId) {
+                           @RequestHeader(name = "ownerId") UUID ownerId) {
         hallService.create(hallCreateDto, ownerId);
     }
 
@@ -33,16 +33,16 @@ public class HallController {
         return hallService.getHall(id);
     }
 
-    @PutMapping("/{id}/ownerId/{ownerId}")
+    @PutMapping("/{id}")
     public void updateUser(@PathVariable("id") UUID id,
                            @RequestBody HallUpdateDto hallUpdateDto,
-                           @PathVariable("ownerId") UUID ownerId) {
+                           @RequestHeader(name = "ownerId") UUID ownerId) {
         hallService.update(id, hallUpdateDto, ownerId);
     }
 
-    @DeleteMapping("/{id}/ownerId/{ownerId}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") UUID id,
-                           @PathVariable("ownerId") UUID ownerid) {
+                           @RequestHeader(name = "ownerId") UUID ownerid) {
         hallService.delete(id, ownerid);
     }
 }

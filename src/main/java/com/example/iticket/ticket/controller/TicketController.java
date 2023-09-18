@@ -17,7 +17,7 @@ import java.util.UUID;
 public class TicketController {
     private final TicketService ticketService;
 
-    @PostMapping("")
+    @PostMapping
     public void createTicket(@Valid @RequestBody TicketCreateDto ticketCreateDto,
                              @RequestHeader(value = "ownerId") UUID ownerId,
                              @RequestHeader(value = "eventId") UUID eventId,

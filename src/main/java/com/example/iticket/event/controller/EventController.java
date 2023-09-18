@@ -17,10 +17,10 @@ import java.util.UUID;
 public class EventController {
     private final EventService eventService;
 
-    @PostMapping("/ownerId/{ownerId}/hallId/{hallId}")
+    @PostMapping
     public void createEvent(@Valid @RequestBody EventCreateDto eventCreateDto,
-                           @PathVariable("ownerId") UUID ownerId,
-                           @PathVariable("hallId") UUID hallId) {
+                            @RequestHeader(name = "ownerId") UUID ownerId,
+                            @RequestHeader(name = "hallId") UUID hallId) {
         eventService.create(eventCreateDto, ownerId, hallId);
     }
 
@@ -34,16 +34,16 @@ public class EventController {
         return eventService.getEvent(id);
     }
 
-    @PutMapping("/{id}/ownerId/{ownerId}")
+    @PutMapping("/{id}")
     public void updateEvent(@PathVariable("id") UUID id,
-                           @RequestBody EventUpdateDto eventUpdateDto,
-                           @PathVariable("ownerId") UUID ownerId) {
+                            @RequestBody EventUpdateDto eventUpdateDto,
+                            @RequestHeader(name = "ownerId") UUID ownerId) {
         eventService.update(id, eventUpdateDto, ownerId);
     }
 
-    @DeleteMapping("/{id}/ownerId/{ownerId}")
+    @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable("id") UUID id,
-                           @PathVariable("ownerId") UUID ownerId) {
+                            @RequestHeader(name = "ownerId") UUID ownerId) {
         eventService.delete(id, ownerId);
     }
 }

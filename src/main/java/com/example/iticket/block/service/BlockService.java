@@ -7,7 +7,6 @@ import com.example.iticket.block.dto.BlockUpdateDto;
 import com.example.iticket.block.enttity.Block;
 import com.example.iticket.block.repository.BlockRepository;
 import com.example.iticket.custom.CustomHooks;
-import com.example.iticket.hall.repository.HallRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BlockService {
     private final BlockRepository blockRepository;
-    private final HallRepository hallRepository;
     private final BlockDtoMapper blockDtoMapper;
     private final CustomHooks customHooks;
 
@@ -40,6 +38,16 @@ public class BlockService {
         Optional<Block> optionalBlock = blockRepository.findById(uuid);
         if (optionalBlock.isPresent()) {
             Block block = optionalBlock.get();
+
+            if (!block.getName().equals(blockUpdateDto.getName())) {
+                Optional<Boolean> blockContains = blockRepository
+                        .findAll()
+                        .stream()
+                        .map(singleBlock -> singleBlock.getName().equals(blockUpdateDto.getName()))
+                        .findFirst();
+
+                if (blockContains.isPresent()) throw new NoSuchElementException("Block is already exist");
+            }
 
             blockDtoMapper.toEntity(blockUpdateDto, block);
 
@@ -62,7 +70,8 @@ public class BlockService {
                 .map(block -> block.getName().equals(blockCreateDto.getName()))
                 .findFirst();
 
-        if (blockContains.isPresent() && blockContains.get()) throw new NoSuchElementException("Block is already exist");
+        if (blockContains.isPresent() && blockContains.get())
+            throw new NoSuchElementException("Block is already exist");
 
         Block block = blockDtoMapper.toEntity(blockCreateDto);
         block.setId(UUID.randomUUID());

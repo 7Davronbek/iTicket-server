@@ -1,6 +1,7 @@
 package com.example.iticket.hall.service;
 
 //import com.example.iticket.event.repository.UserRepository;
+
 import com.example.iticket.custom.CustomHooks;
 import com.example.iticket.hall.dto.HallCreateDto;
 import com.example.iticket.hall.dto.HallDtoMapper;
@@ -8,9 +9,6 @@ import com.example.iticket.hall.dto.HallResponseDto;
 import com.example.iticket.hall.dto.HallUpdateDto;
 import com.example.iticket.hall.entity.Hall;
 import com.example.iticket.hall.repository.HallRepository;
-import com.example.iticket.user.entity.User;
-import com.example.iticket.user.entity.UserType;
-import com.example.iticket.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +41,18 @@ public class HallService {
         if (optionalHall.isPresent()) {
             Hall hall = optionalHall.get();
 
+            if (!hall.getBuildingName().equals(hallUpdateDto.getBuildingName())) {
+
+                Optional<Boolean> hallContains = hallRepository
+                        .findAll()
+                        .stream()
+                        .map(singleHall -> (singleHall.getBuildingName().equals(hallUpdateDto.getBuildingName()) &&
+                                singleHall.getRegion().equals(hallUpdateDto.getBuildingName())))
+                        .findFirst();
+
+                if (hallContains.isPresent()) throw new NoSuchElementException("Hall is already exist");
+            }
+
             hallDtoMapper.toEntity(hallUpdateDto, hall);
 
             hallRepository.save(hall);
@@ -63,7 +73,8 @@ public class HallService {
         Optional<Boolean> hallContains = hallRepository
                 .findAll()
                 .stream()
-                .map(hall -> hall.getBuildingName().equals(hallCreateDto.getBuildingName()))
+                .map(hall -> (hall.getBuildingName().equals(hallCreateDto.getBuildingName()) &&
+                        hall.getRegion().equals(hallCreateDto.getBuildingName())))
                 .findFirst();
 
         if (hallContains.isPresent() && hallContains.get()) throw new NoSuchElementException("Hall is already exist");

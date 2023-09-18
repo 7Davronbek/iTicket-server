@@ -20,7 +20,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
 
-
     public UserResponseDto getUser(UUID uuid) {
         Optional<User> optionalUser = userRepository.findById(uuid);
 
@@ -38,12 +37,20 @@ public class UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
+            if (!user.getPhoneNumber().equals(userUpdateDto.getPhoneNumber())) {
+                Optional<Boolean> userContains = userRepository
+                        .findAll()
+                        .stream()
+                        .map(sungleUser -> sungleUser.getPhoneNumber().equals(userUpdateDto.getPhoneNumber()))
+                        .findFirst();
+
+                if (userContains.isPresent()) throw new NoSuchElementException("User is already exist");
+            }
+
             userDtoMapper.toEntity(userUpdateDto, user);
 
             userRepository.save(user);
-            return;
-        }
-        throw new NoSuchElementException("User not found");
+        } else throw new NoSuchElementException("User not found");
     }
 
     public void delete(UUID uuid) {
