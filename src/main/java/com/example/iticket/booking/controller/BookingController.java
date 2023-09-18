@@ -1,7 +1,6 @@
 package com.example.iticket.booking.controller;
 
-import com.example.iticket.book.service.BookingService;
-import com.example.iticket.custom.CustomHooks;
+import com.example.iticket.booking.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService service;
-    private final CustomHooks customHooks;
 
     @PostMapping
     public void createBooking(@RequestHeader(name = "ownerId")UUID userId,
