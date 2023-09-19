@@ -28,6 +28,32 @@ public class TicketService {
     private final BlockRepository blockRepository;
     private final EventRepository eventRepository;
 
+
+    public void create(TicketCreateDto ticketCreateDto, UUID ownerId, UUID eventId, UUID blockId) {
+        customHooks.isAdmin(ownerId);
+
+        Optional<Boolean> ticketContains = ticketRepository
+                .findAll()
+                .stream()
+                .map(ticket -> ticket.getName().equals(ticketCreateDto.getName()))
+                .findFirst();
+
+        if (ticketContains.isPresent() && ticketContains.get())
+            throw new NoSuchElementException("Ticket is already exist");
+
+        Optional<Block> optionalBlock = blockRepository.findById(blockId);
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+
+        if (optionalBlock.isPresent() && optionalEvent.isPresent()) {
+            Ticket ticket = ticketDtoMapper.toEntity(ticketCreateDto);
+
+            ticket.setId(UUID.randomUUID());
+            ticket.setBlockId(blockId);
+            ticket.setEventId(eventId);
+
+            ticketRepository.save(ticket);
+        } else throw new NoSuchElementException("Not found");
+    }
     public TicketResponseDto getTicket(UUID uuid) {
         Optional<Ticket> optionalTicket = ticketRepository.findById(uuid);
 
@@ -66,31 +92,5 @@ public class TicketService {
         customHooks.isAdmin(ownerId);
 
         ticketRepository.deleteById(uuid);
-    }
-
-    public void create(TicketCreateDto ticketCreateDto, UUID ownerId, UUID eventId, UUID blockId) {
-        customHooks.isAdmin(ownerId);
-
-        Optional<Boolean> ticketContains = ticketRepository
-                .findAll()
-                .stream()
-                .map(ticket -> ticket.getName().equals(ticketCreateDto.getName()))
-                .findFirst();
-
-        if (ticketContains.isPresent() && ticketContains.get())
-            throw new NoSuchElementException("Ticket is already exist");
-
-        Optional<Block> optionalBlock = blockRepository.findById(blockId);
-        Optional<Event> optionalEvent = eventRepository.findById(eventId);
-
-        if (optionalBlock.isPresent() && optionalEvent.isPresent()) {
-            Ticket ticket = ticketDtoMapper.toEntity(ticketCreateDto);
-
-            ticket.setId(UUID.randomUUID());
-            ticket.setBlockId(blockId);
-            ticket.setEventId(eventId);
-
-            ticketRepository.save(ticket);
-        } else throw new NoSuchElementException("Not found");
     }
 }

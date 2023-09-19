@@ -22,18 +22,6 @@ public class BookingService {
     private final UserRepository userRepository;
     private final CustomHooks customHooks;
 
-//    public BookingResponseDto getBooking(UUID bookingId) {
-//        Optional<Booking> optionalBooking = repository.findById(bookingId);
-//        Booking booking = optionalBooking.get();
-//        booking.setBookId(bookingId);
-//        booking.set
-//        return optionalBooking.map(dtoMapper::toResponse).orElseThrow(() -> new NoSuchElementException("Booking not found"));
-//    }
-//
-//    public List<BookingResponseDto> getBookings() {
-//
-//        return dtoMapper.toResponse(repository.findAll());
-//    }
 
     public void delete(UUID uuid, UUID ownerId) {
         customHooks.isAdmin(ownerId);
@@ -59,4 +47,17 @@ public class BookingService {
             } else throw new NoSuchElementException("User or ticket not found");
         }
     }
+
+//    public BookingResponseDto getBooking(UUID bookingId) {
+//        Optional<Booking> optionalBooking = repository.findById(bookingId);
+//        Booking booking = optionalBooking.get();
+//        booking.setBookId(bookingId);
+//        booking.set
+//        return optionalBooking.map(dtoMapper::toResponse).orElseThrow(() -> new NoSuchElementException("Booking not found"));
+//    }
+//
+//    public List<BookingResponseDto> getBookings() {
+//
+//        return dtoMapper.toResponse(repository.findAll());
+//    }
 }

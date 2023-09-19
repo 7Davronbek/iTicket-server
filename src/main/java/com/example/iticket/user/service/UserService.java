@@ -20,6 +20,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
 
+
+    public void create(UserCreateDto userCreateDto) {
+        Optional<Boolean> userContains = userRepository
+                .findAll()
+                .stream()
+                .map(user -> user.getPhoneNumber().equals(userCreateDto.getPhoneNumber()))
+                .findFirst();
+
+        if (userContains.isPresent() && userContains.get()) throw new NoSuchElementException("User is already exist");
+
+        User user = userDtoMapper.toEntity(userCreateDto);
+        user.setId(UUID.randomUUID());
+
+        userRepository.save(user);
+    }
     public UserResponseDto getUser(UUID uuid) {
         Optional<User> optionalUser = userRepository.findById(uuid);
 
@@ -55,21 +70,6 @@ public class UserService {
 
     public void delete(UUID uuid) {
         userRepository.deleteById(uuid);
-    }
-
-    public void create(UserCreateDto userCreateDto) {
-        Optional<Boolean> userContains = userRepository
-                .findAll()
-                .stream()
-                .map(user -> user.getPhoneNumber().equals(userCreateDto.getPhoneNumber()))
-                .findFirst();
-
-        if (userContains.isPresent() && userContains.get()) throw new NoSuchElementException("User is already exist");
-
-        User user = userDtoMapper.toEntity(userCreateDto);
-        user.setId(UUID.randomUUID());
-
-        userRepository.save(user);
     }
 }
 

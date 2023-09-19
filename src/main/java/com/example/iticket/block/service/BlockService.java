@@ -22,6 +22,25 @@ public class BlockService {
     private final BlockDtoMapper blockDtoMapper;
     private final CustomHooks customHooks;
 
+
+    public void create(BlockCreateDto blockCreateDto, UUID ownerId, UUID hallId) {
+        customHooks.isAdmin(ownerId);
+
+        Optional<Boolean> blockContains = blockRepository
+                .findAll()
+                .stream()
+                .map(block -> block.getName().equals(blockCreateDto.getName()))
+                .findFirst();
+
+        if (blockContains.isPresent() && blockContains.get())
+            throw new NoSuchElementException("Block is already exist");
+
+        Block block = blockDtoMapper.toEntity(blockCreateDto);
+        block.setId(UUID.randomUUID());
+        block.setHallId(hallId);
+
+        blockRepository.save(block);
+    }
     public BlockResponseDto getBlock(UUID uuid) {
         Optional<Block> optionalBlock = blockRepository.findById(uuid);
 
@@ -59,24 +78,5 @@ public class BlockService {
         customHooks.isAdmin(ownerId);
 
         blockRepository.deleteById(uuid);
-    }
-
-    public void create(BlockCreateDto blockCreateDto, UUID ownerId, UUID hallId) {
-        customHooks.isAdmin(ownerId);
-
-        Optional<Boolean> blockContains = blockRepository
-                .findAll()
-                .stream()
-                .map(block -> block.getName().equals(blockCreateDto.getName()))
-                .findFirst();
-
-        if (blockContains.isPresent() && blockContains.get())
-            throw new NoSuchElementException("Block is already exist");
-
-        Block block = blockDtoMapper.toEntity(blockCreateDto);
-        block.setId(UUID.randomUUID());
-        block.setHallId(hallId);
-
-        blockRepository.save(block);
     }
 }

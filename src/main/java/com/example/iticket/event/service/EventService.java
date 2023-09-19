@@ -34,6 +34,35 @@ public class EventService {
         return optionalEvent.map(eventDtoMapper::toResponse).orElseThrow(() -> new NoSuchElementException("Event not found"));
     }
 
+
+    public void create(EventCreateDto eventCreateDto, UUID ownerId, UUID hallId) {
+        customHooks.isAdmin(ownerId);
+
+        Optional<Boolean> eventContains = eventRepository
+                .findAll()
+                .stream()
+                .map(event -> event.getName().equals(eventCreateDto.getName()))
+                .findFirst();
+
+        if (eventContains.isPresent() && eventContains.get())
+            throw new NoSuchElementException("Event is already exist");
+
+        Event event = eventDtoMapper.toEntity(eventCreateDto);
+        Optional<User> optionalUser = userRepository.findById(ownerId);
+        Optional<Hall> optionalHall = hallRepository.findById(hallId);
+
+        if (optionalHall.isPresent() && optionalUser.isPresent()) {
+
+            User user = optionalUser.get();
+            Hall hall = optionalHall.get();
+
+            event.setId(UUID.randomUUID());
+            event.setOrganizerID(user.getId());
+            event.setHallID(hall.getId());
+
+            eventRepository.save(event);
+        } else throw new NoSuchElementException("Not found");
+    }
     public List<EventResponseDto> getEvents() {
         return eventDtoMapper.toResponse(eventRepository.findAll());
     }
@@ -65,34 +94,5 @@ public class EventService {
         customHooks.isAdmin(ownerId);
 
         eventRepository.deleteById(uuid);
-    }
-
-    public void create(EventCreateDto eventCreateDto, UUID ownerId, UUID hallId) {
-        customHooks.isAdmin(ownerId);
-
-        Optional<Boolean> eventContains = eventRepository
-                .findAll()
-                .stream()
-                .map(event -> event.getName().equals(eventCreateDto.getName()))
-                .findFirst();
-
-        if (eventContains.isPresent() && eventContains.get())
-            throw new NoSuchElementException("Event is already exist");
-
-        Event event = eventDtoMapper.toEntity(eventCreateDto);
-        Optional<User> optionalUser = userRepository.findById(ownerId);
-        Optional<Hall> optionalHall = hallRepository.findById(hallId);
-
-        if (optionalHall.isPresent() && optionalUser.isPresent()) {
-
-            User user = optionalUser.get();
-            Hall hall = optionalHall.get();
-
-            event.setId(UUID.randomUUID());
-            event.setOrganizerID(user.getId());
-            event.setHallID(hall.getId());
-
-            eventRepository.save(event);
-        } else throw new NoSuchElementException("Not found");
     }
 }

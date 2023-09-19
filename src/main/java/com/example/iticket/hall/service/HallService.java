@@ -24,6 +24,25 @@ public class HallService {
     private final HallRepository hallRepository;
     private final CustomHooks customHooks;
 
+
+    public void create(HallCreateDto hallCreateDto, UUID ownerId) {
+        customHooks.isAdmin(ownerId);
+
+        Optional<Boolean> hallContains = hallRepository
+                .findAll()
+                .stream()
+                .map(hall -> (hall.getBuildingName().equals(hallCreateDto.getBuildingName()) &&
+                        hall.getRegion().equals(hallCreateDto.getBuildingName())))
+                .findFirst();
+
+        if (hallContains.isPresent() && hallContains.get()) throw new NoSuchElementException("Hall is already exist");
+
+        Hall hall = hallDtoMapper.toEntity(hallCreateDto);
+        hall.setId(UUID.randomUUID());
+        hall.setOwnerId(ownerId);
+
+        hallRepository.save(hall);
+    }
     public HallResponseDto getHall(UUID uuid) {
         Optional<Hall> optionalHall = hallRepository.findById(uuid);
 
@@ -65,24 +84,5 @@ public class HallService {
         customHooks.isAdmin(ownerId);
 
         hallRepository.deleteById(uuid);
-    }
-
-    public void create(HallCreateDto hallCreateDto, UUID ownerId) {
-        customHooks.isAdmin(ownerId);
-
-        Optional<Boolean> hallContains = hallRepository
-                .findAll()
-                .stream()
-                .map(hall -> (hall.getBuildingName().equals(hallCreateDto.getBuildingName()) &&
-                        hall.getRegion().equals(hallCreateDto.getBuildingName())))
-                .findFirst();
-
-        if (hallContains.isPresent() && hallContains.get()) throw new NoSuchElementException("Hall is already exist");
-
-        Hall hall = hallDtoMapper.toEntity(hallCreateDto);
-        hall.setId(UUID.randomUUID());
-        hall.setOwnerId(ownerId);
-
-        hallRepository.save(hall);
     }
 }
